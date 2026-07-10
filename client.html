@@ -106,6 +106,9 @@
   .del-dish-btn{background:none;border:none;color:var(--danger);cursor:pointer;font-size:13px;padding:2px 4px;opacity:0.35;line-height:1}
   .del-dish-btn:hover{opacity:1}
   .rem-ok{color:var(--accent)}.rem-warn{color:var(--warn)}.rem-danger{color:var(--danger)}
+  tr.totals-row td{font-weight:700;background:var(--surface2);border-top:2px solid var(--border)}
+  tr.totals-row td.tot-label{padding-left:16px;font-size:13px;color:var(--text2)}
+  tr.totals-row td.num-cell{text-align:center}
 
   /* ── Inputs ── */
   input[type="number"]{width:50px;height:30px;text-align:center;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;font-family:inherit;padding:0 4px;-moz-appearance:textfield;appearance:textfield}
@@ -458,11 +461,53 @@ function renderSections() {
       <th class="num-h">Corr.</th><th class="rem-h">Left</th>
       ${isAdmin?'<th class="del-h"></th>':''}
     </tr></thead></table></div>
-    <div class="tbl-wrap"><table>${colgroup}${catBodies}</table></div>
+    <div class="tbl-wrap"><table>${colgroup}${catBodies[0]}${catBodies[1]}${renderTotalsRow('tot-meals','Meals Total',['Meat','Non-Meat'])}${catBodies[2]}${renderTotalsRow('tot-desserts','Desserts Total',['Desserts'])}</table></div>
   </div>`;
   const wrap=document.querySelector('#sections .tbl-wrap');
   const hw=document.querySelector('#sections .sticky-thead-wrapper');
   if(wrap&&hw) wrap.addEventListener('scroll',()=>{hw.scrollLeft=wrap.scrollLeft;});
+}
+
+function renderTotalsRow(id,label,cats) {
+  const wi=state.activeWeek;
+  let totStart=0,totOrdered=0,totCorr=0,totRem=0;
+  const totSessions=Array(SESSIONS.length).fill(0);
+  cats.forEach(cat=>(state.weeks[wi]?.cats[cat]||[]).forEach((m,mi)=>{
+    totStart+=(wi>0?rem(wi-1,cat,mi):m.start)||0;
+    totOrdered+=m.ordered||0;
+    m.sessions.forEach((v,si)=>totSessions[si]+=v);
+    totCorr+=m.corrections||0;
+    totRem+=rem(wi,cat,mi);
+  }));
+  const sessionCells=totSessions.map((v,si)=>`<td class="num-cell" id="${id}-s${si}">${v}</td>`).join('');
+  return `<tbody><tr class="totals-row">
+    <td class="tot-label" colspan="3">${label}</td>
+    <td class="num-cell" id="${id}-start">${totStart}</td>
+    <td class="num-cell" id="${id}-ordered">${totOrdered}</td>
+    ${sessionCells}
+    <td class="num-cell" id="${id}-corr">${totCorr}</td>
+    <td class="num-cell" id="${id}-rem">${totRem}</td>
+    ${isAdmin?'<td></td>':''}
+  </tr></tbody>`;
+}
+
+function updateTotalsRows() {
+  const wi=state.activeWeek;
+  [{id:'tot-meals',cats:['Meat','Non-Meat']},{id:'tot-desserts',cats:['Desserts']}].forEach(({id,cats})=>{
+    let totStart=0,totOrdered=0,totCorr=0,totRem=0;
+    const totSessions=Array(SESSIONS.length).fill(0);
+    cats.forEach(cat=>(state.weeks[wi]?.cats[cat]||[]).forEach((m,mi)=>{
+      totStart+=(wi>0?rem(wi-1,cat,mi):m.start)||0;
+      totOrdered+=m.ordered||0;
+      m.sessions.forEach((v,si)=>totSessions[si]+=v);
+      totCorr+=m.corrections||0;
+      totRem+=rem(wi,cat,mi);
+    }));
+    const set=(elId,val)=>{const el=document.getElementById(elId);if(el)el.textContent=val;};
+    set(`${id}-start`,totStart);set(`${id}-ordered`,totOrdered);
+    totSessions.forEach((v,si)=>set(`${id}-s${si}`,v));
+    set(`${id}-corr`,totCorr);set(`${id}-rem`,totRem);
+  });
 }
 
 function renderTableRows(cat,meals) {
@@ -506,7 +551,7 @@ function handleInput(el) {
   el.className = field==='session'
     ? (value>0?'negative':value<0?'positive':'')
     : (value<0?'negative':value>0?'positive':'');
-  updateRemCell(cat,mi); renderSummaryBar(); renderLowStock();
+  updateRemCell(cat,mi); updateTotalsRows(); renderSummaryBar(); renderLowStock();
   send({type:'cell_update',weekIdx:wi,cat,mi,field,si,value});
   flashSaved();
 }
@@ -539,7 +584,7 @@ function applyRemoteCell(wi,cat,mi,field,si,value) {
     el.classList.add('remote-flash');
     el.addEventListener('animationend',()=>el.classList.remove('remote-flash'),{once:true});
   }
-  updateRemCell(cat,mi);
+  updateRemCell(cat,mi); updateTotalsRows();
 }
 
 function flashSaved() {
@@ -625,8 +670,10 @@ function exportCSV() {
   const week=state.weeks[state.activeWeek];
   const headers=['Category','Dish','Dietary','Start','Ordered',...SESSIONS,'Corrections','Remainder'];
   const rows=[headers.join(',')];
-  CATEGORIES.forEach(cat=>(week.cats[cat]||[]).forEach(m=>{
-    rows.push([cat,`"${m.name}"`,`"${m.diet}"`,m.start,m.ordered,...m.sessions,m.corrections,rem(m)].join(','));
+  const wi=state.activeWeek;
+  CATEGORIES.forEach(cat=>(week.cats[cat]||[]).forEach((m,mi)=>{
+    const start=wi>0?rem(wi-1,cat,mi):m.start;
+    rows.push([cat,`"${m.name}"`,`"${m.diet}"`,start,m.ordered,...m.sessions,m.corrections,rem(wi,cat,mi)].join(','));
   }));
   dl(rows.join('\n'),'text/csv',`stock-${week.label.replace(/[^a-z0-9]/gi,'-')}.csv`);
   showToast('Stock CSV exported');
