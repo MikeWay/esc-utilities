@@ -4,3 +4,5 @@ dist/
 .env
 lightsail-deploy.json
 exe-sc-tools-deploy.json
+test-results/
+playwright-report/

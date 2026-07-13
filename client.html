@@ -206,7 +206,7 @@
       <button class="icon-btn" id="auditToggleBtn" onclick="toggleAudit()">📋 Audit Log</button>
       <button class="icon-btn" onclick="openAddDish()">＋ Dish</button>
       <button class="icon-btn" onclick="openManageWeeks()">📅 Week</button>
-      <form method="post" action="/auth/logout" style="display:inline;margin:0">
+      <form method="post" action="/auth/logout" id="logoutForm" style="display:inline;margin:0">
         <button type="submit" class="icon-btn">⏻ Sign out</button>
       </form>
     </div>
@@ -763,6 +763,8 @@ function showToast(msg) {
 }
 
 // ── Boot ───────────────────────────────────────────────────────────
+const _lf = document.getElementById('logoutForm');
+if (_lf) _lf.action = (window.__BASE_PATH__ || '') + '/auth/logout';
 connectWS();
 
 let serverVersion=null;

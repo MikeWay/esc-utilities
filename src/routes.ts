@@ -581,7 +581,7 @@ export function createAuthRouter(
       </tr>`;
     }).join('');
 
-    res.setHeader('Content-Type', 'text/html; charset=utf-8').send(adminPage(rows, weeks, activeWeekId, freezerResult.rows, usersResult.rows));
+    res.setHeader('Content-Type', 'text/html; charset=utf-8').send(injectBasePath(adminPage(rows, weeks, activeWeekId, freezerResult.rows, usersResult.rows), basePath));
   });
 
   router.post('/admin/users/:id/approve', requireAdmin, async (req: Request, res: Response) => {

@@ -1,12 +1,16 @@
 {
   "name": "meal-stock-control",
-  "version": "2.3.3",
+  "version": "2.3.4",
   "description": "Meal Stock Control — real-time multi-tablet server with PostgreSQL",
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "setup-db": "node dist/setup-db.js"
+    "setup-db": "node dist/setup-db.js",
+    "pretest": "npm run build",
+    "test": "jest",
+    "test:e2e": "npx playwright test",
+    "test:all": "npm test && npm run test:e2e"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -23,10 +27,15 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@babel/preset-env": "^7.29.7",
+    "@babel/preset-typescript": "^7.29.7",
+    "@playwright/test": "^1.61.1",
     "@types/bcrypt": "^6.0.0",
     "@types/connect-pg-simple": "^7.0.3",
     "@types/express": "^5.0.6",
     "@types/express-session": "^1.19.0",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.0.0",
     "@types/nodemailer": "^8.0.0",
     "@types/passport": "^1.0.17",
@@ -34,7 +43,12 @@
     "@types/passport-google-oauth20": "^2.0.17",
     "@types/passport-local": "^1.0.38",
     "@types/pg": "^8.11.0",
+    "@types/supertest": "^7.2.0",
     "@types/ws": "^8.18.1",
+    "babel-jest": "^30.4.1",
+    "jest": "^30.4.2",
+    "supertest": "^7.2.2",
+    "ts-jest": "^29.4.11",
     "typescript": "^5.0.0"
   }
 }
