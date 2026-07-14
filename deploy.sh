@@ -5,6 +5,31 @@ REGION="${AWS_DEFAULT_REGION:-eu-west-2}"
 SERVICE="exe-sc-tools"
 DEPLOY_JSON="exe-sc-tools-deploy.json"
 
+# ── Pre-deploy backup ──────────────────────────────────────────
+echo "==> Triggering pre-deploy S3 backup..."
+SERVICE_URL=$(aws lightsail get-container-services \
+  --region "$REGION" --service-name "$SERVICE" \
+  --query 'containerServices[0].url' --output text 2>/dev/null || true)
+BACKUP_TOKEN=$(python3 - "$DEPLOY_JSON" <<'EOF'
+import sys, json, hashlib
+try:
+  d = json.load(open(sys.argv[1]))
+  s = d['containers']['app']['environment'].get('SESSION_SECRET', '')
+  print(hashlib.sha256((s + ':s3backup').encode()).hexdigest())
+except Exception as e:
+  print('')
+EOF
+)
+if [ -n "$SERVICE_URL" ] && [ -n "$BACKUP_TOKEN" ]; then
+  BACKUP_RESULT=$(curl -s -X POST \
+    -H "Authorization: Bearer ${BACKUP_TOKEN}" \
+    --max-time 40 \
+    "${SERVICE_URL}mealstock/admin/backup" 2>/dev/null || echo '{"ok":false,"error":"curl failed"}')
+  echo "    Result: $BACKUP_RESULT"
+else
+  echo "    Skipped (service not reachable or secret unavailable)"
+fi
+
 # ── mealstock app ──────────────────────────────────────────────
 echo "==> Building mealstock..."
 docker build -t mealstock-app .

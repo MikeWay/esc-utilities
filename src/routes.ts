@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import passport from 'passport';
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 import path from 'path';
 import fs from 'fs';
 import { Pool } from 'pg';
@@ -167,6 +168,13 @@ ${freezerOptions.length
   <button type="submit" class="btn-reject" style="font-size:13px;padding:6px 16px">Reset all data to zero</button>
 </form>
 
+<h2 style="font-size:16px;margin:32px 0 12px">Backup to S3</h2>
+<p style="color:var(--text2);margin-bottom:12px;font-size:13px">
+  Triggers an immediate pg_dump and uploads to S3. Run this before upgrading the database schema.
+</p>
+<button onclick="doBackup()" class="btn-approve" style="font-size:13px;padding:6px 16px" id="backupBtn">Backup Now</button>
+<span id="backupResult" style="margin-left:12px;font-size:13px"></span>
+
 <h2 style="font-size:16px;margin:32px 0 12px">SQL Query</h2>
 <textarea id="sqlInput" rows="5"
   style="width:100%;font-family:monospace;font-size:13px;padding:8px;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:var(--radius);resize:vertical;box-sizing:border-box"
@@ -198,6 +206,29 @@ async function doImportStock() {
     out.textContent = msg;
     fileInput.value = '';
   } catch(e) { out.style.color='var(--danger)'; out.textContent='Fetch error: ' + e; }
+}
+async function doBackup() {
+  const btn = document.getElementById('backupBtn');
+  const out = document.getElementById('backupResult');
+  btn.disabled = true;
+  out.style.color = 'var(--text2)';
+  out.textContent = 'Backing up…';
+  try {
+    const r = await fetch('/admin/backup', { method: 'POST' });
+    const data = await r.json();
+    if (data.ok) {
+      out.style.color = 'var(--accent)';
+      out.textContent = 'Backup complete at ' + new Date(data.backedUpAt).toLocaleTimeString();
+    } else {
+      out.style.color = 'var(--danger)';
+      out.textContent = 'Error: ' + (data.error || 'unknown');
+    }
+  } catch(e) {
+    out.style.color = 'var(--danger)';
+    out.textContent = 'Fetch error: ' + e;
+  } finally {
+    btn.disabled = false;
+  }
 }
 async function runSql() {
   const query = document.getElementById('sqlInput').value;
@@ -735,6 +766,38 @@ export function createAuthRouter(
     } catch (e: unknown) {
       res.json({ error: e instanceof Error ? e.message : String(e) });
     }
+  });
+
+  // Force immediate S3 backup — accepts admin session or script Bearer token
+  router.post('/admin/backup', async (req: Request, res: Response) => {
+    const scriptToken = crypto.createHash('sha256')
+      .update((process.env.SESSION_SECRET || '') + ':s3backup')
+      .digest('hex');
+    const isTokenAuth = req.headers.authorization === `Bearer ${scriptToken}`;
+    const isAdminSession = req.isAuthenticated() && (req.user as AppUser)?.is_admin;
+    if (!isTokenAuth && !isAdminSession) {
+      res.status(403).json({ ok: false, error: 'Forbidden' }); return;
+    }
+
+    const before = await pool.query<{ value: string }>(
+      "SELECT value FROM app_settings WHERE key='last_backup_at'"
+    );
+    const beforeTime = before.rows[0]?.value ?? null;
+
+    await pool.query("SELECT pg_notify('trigger_backup', '')");
+
+    const deadline = Date.now() + 30000;
+    while (Date.now() < deadline) {
+      await new Promise(r => setTimeout(r, 1000));
+      const after = await pool.query<{ value: string }>(
+        "SELECT value FROM app_settings WHERE key='last_backup_at'"
+      );
+      const afterTime = after.rows[0]?.value ?? null;
+      if (afterTime && afterTime !== beforeTime) {
+        res.json({ ok: true, backedUpAt: afterTime }); return;
+      }
+    }
+    res.status(504).json({ ok: false, error: 'Backup did not complete within 30 seconds' });
   });
 
   return router;

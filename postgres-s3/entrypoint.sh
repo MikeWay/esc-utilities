@@ -49,6 +49,7 @@ if [ "$S3_BACKUP_DISABLED" != "true" ] && [ -n "$S3_BUCKET" ]; then
           if pg_dump -U "$USER" -Fc "$DB" > /tmp/mealstock-od.dump 2>/dev/null; then
             aws s3 cp /tmp/mealstock-od.dump "s3://${S3_BUCKET}/mealstock.dump" --quiet
             rm -f /tmp/mealstock-od.dump
+            psql -U "$USER" -d "$DB" -c "INSERT INTO app_settings (key,value) VALUES ('last_backup_at',NOW()::text) ON CONFLICT (key) DO UPDATE SET value=NOW()::text;" > /dev/null 2>&1 || true
             echo "$(date -u +%H:%M:%S): On-demand backup complete."
           else
             rm -f /tmp/mealstock-od.dump
@@ -73,6 +74,7 @@ if [ "$S3_BACKUP_DISABLED" != "true" ]; then
     if pg_dump -U "$USER" -Fc "$DB" > /tmp/mealstock.dump 2>/dev/null; then
       aws s3 cp /tmp/mealstock.dump "s3://${S3_BUCKET}/mealstock.dump" --quiet
       rm -f /tmp/mealstock.dump
+      psql -U "$USER" -d "$DB" -c "INSERT INTO app_settings (key,value) VALUES ('last_backup_at',NOW()::text) ON CONFLICT (key) DO UPDATE SET value=NOW()::text;" > /dev/null 2>&1 || true
       echo "$(date -u +%H:%M:%S): Backup complete."
     else
       rm -f /tmp/mealstock.dump
