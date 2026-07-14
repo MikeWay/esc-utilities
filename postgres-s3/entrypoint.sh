@@ -32,35 +32,25 @@ fi
 # Write sentinel so the app container knows restore is done
 psql -U "$USER" -d "$DB" -c "CREATE TABLE IF NOT EXISTS _restore_complete (id INT PRIMARY KEY DEFAULT 1, done BOOL NOT NULL DEFAULT true); INSERT INTO _restore_complete VALUES(1, true) ON CONFLICT(id) DO UPDATE SET done=true;" > /dev/null 2>&1 || true
 
-# On-demand backup listener: fires immediately when app sends pg_notify('trigger_backup','')
+# On-demand backup listener: polls every 5 s; pg_notify('trigger_backup','') wakes it up
+# psql prints any notification received during pg_sleep, which grep then catches.
 if [ "$S3_BACKUP_DISABLED" != "true" ] && [ -n "$S3_BUCKET" ]; then
 (
-  PIPE=/tmp/pg_notify_pipe
   while true; do
-    rm -f "$PIPE"
-    mkfifo "$PIPE"
-    # Writer: send LISTEN command then keep pipe open so psql stays connected
-    ( echo "LISTEN trigger_backup;"; exec tail -f /dev/null ) > "$PIPE" &
-    WRITER_PID=$!
-    psql -U "$USER" -d "$DB" < "$PIPE" 2>/dev/null | while IFS= read -r line; do
-      case "$line" in
-        *trigger_backup*)
-          echo "$(date -u +%H:%M:%S): On-demand backup triggered..."
-          if pg_dump -U "$USER" -Fc "$DB" > /tmp/mealstock-od.dump 2>/dev/null; then
-            aws s3 cp /tmp/mealstock-od.dump "s3://${S3_BUCKET}/mealstock.dump" --quiet
-            rm -f /tmp/mealstock-od.dump
-            psql -U "$USER" -d "$DB" -c "INSERT INTO app_settings (key,value) VALUES ('last_backup_at',NOW()::text) ON CONFLICT (key) DO UPDATE SET value=NOW()::text;" > /dev/null 2>&1 || true
-            echo "$(date -u +%H:%M:%S): On-demand backup complete."
-          else
-            rm -f /tmp/mealstock-od.dump
-            echo "$(date -u +%H:%M:%S): On-demand backup failed."
-          fi
-          ;;
-      esac
-    done
-    kill "$WRITER_PID" 2>/dev/null
-    rm -f "$PIPE"
-    sleep 5
+    if psql -U "$USER" -d "$DB" -t -A \
+        -c "LISTEN trigger_backup; SELECT pg_sleep(5);" 2>/dev/null \
+        | grep -q "trigger_backup"; then
+      echo "$(date -u +%H:%M:%S): On-demand backup triggered..."
+      if pg_dump -U "$USER" -Fc "$DB" > /tmp/mealstock-od.dump 2>/dev/null; then
+        aws s3 cp /tmp/mealstock-od.dump "s3://${S3_BUCKET}/mealstock.dump" --quiet
+        rm -f /tmp/mealstock-od.dump
+        psql -U "$USER" -d "$DB" -c "INSERT INTO app_settings (key,value) VALUES ('last_backup_at',NOW()::text) ON CONFLICT (key) DO UPDATE SET value=NOW()::text;" > /dev/null 2>&1 || true
+        echo "$(date -u +%H:%M:%S): On-demand backup complete."
+      else
+        rm -f /tmp/mealstock-od.dump
+        echo "$(date -u +%H:%M:%S): On-demand backup failed."
+      fi
+    fi
   done
 ) &
 fi
