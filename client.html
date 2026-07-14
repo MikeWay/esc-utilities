@@ -831,6 +831,7 @@ window.addEventListener('pagehide', () => {
   if (el instanceof HTMLInputElement && el.type === 'number' && el.dataset.field) {
     handleInput(el);
   }
+  send({type: 'backup_db'});
 });
 </script>
 </body>

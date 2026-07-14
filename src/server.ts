@@ -551,6 +551,9 @@ wss.on('connection', async (ws, req) => {
         broadcast({ type: 'full_state', data: cachedState }, ws);
         ws.send(JSON.stringify({ type: 'full_state', data: cachedState }));
 
+      } else if (msg.type === 'backup_db') {
+        pool.query("SELECT pg_notify('trigger_backup', '')").catch(() => {});
+
       } else if (msg.type === 'update_freezer') {
         const dish = cachedState!.weeks[msg.weekIdx]?.cats[msg.cat as Category]?.[msg.mi];
         if (!dish) throw new Error('Dish not found');
