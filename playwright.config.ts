@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests/e2e',
+  workers: 1,
   globalSetup: './tests/helpers/playwrightSetup.ts',
   use: { baseURL: 'http://localhost:3002' },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],

@@ -444,7 +444,7 @@ app.get(`${BASE_PATH}/`, requireAuth, (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8').send(html);
 });
 
-app.get(`${BASE_PATH}/version`, requireAuth, (_req: Request, res: Response) => {
+app.get(`${BASE_PATH}/version`, (_req: Request, res: Response) => {
   res.json({ version: SERVER_STARTED_AT, appVersion: APP_VERSION });
 });
 
@@ -503,8 +503,9 @@ wss.on('connection', async (ws, req) => {
         }
 
       } else if (msg.type === 'set_active_week') {
+        if (msg.weekIdx < 0 || msg.weekIdx >= (cachedState?.weeks.length ?? 0)) return;
         cachedState!.activeWeek = msg.weekIdx;
-        await saveActiveWeek(cachedState!.weeks[msg.weekIdx]?.dbId);
+        await saveActiveWeek(cachedState!.weeks[msg.weekIdx].dbId);
         broadcast({ type: 'set_active_week', weekIdx: msg.weekIdx }, ws);
 
       } else if (msg.type === 'add_week') {

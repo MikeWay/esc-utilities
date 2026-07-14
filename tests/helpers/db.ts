@@ -38,16 +38,6 @@ export async function seedTestDb(pool: Pool): Promise<void> {
     'to-approve@test.com',
   ]);
 
-  const weekRes = await pool.query<{ id: number }>(
-    "INSERT INTO weeks (label, sort_order) VALUES ('Week 1', 1) RETURNING id"
-  );
-  const weekId = weekRes.rows[0].id;
-
-  await pool.query(
-    "INSERT INTO app_settings (key, value) VALUES ('active_week_id', $1) ON CONFLICT (key) DO UPDATE SET value=$1",
-    [weekId.toString()]
-  );
-
   const SESSION_NAMES = [
     'Tues Improv','Tues Cruisers','Wed Diners','Wed Dinghies',
     'Thurs Diners','Thurs Juniors','Thurs Cruisers','Friday','Saturday','Sunday',
@@ -59,18 +49,37 @@ export async function seedTestDb(pool: Pool): Promise<void> {
     { cat: 'Desserts', name: 'Apple Crumble',  diet: 'Vegetarian',    start: 40 },
   ];
 
-  for (const [i, d] of dishDefs.entries()) {
-    const dr = await pool.query<{ id: number }>(
-      `INSERT INTO dishes (week_id,category,sort_order,name,diet,freezer,start,ordered,corrections)
-       VALUES ($1,$2,$3,$4,$5,'',   $6,    0,      0) RETURNING id`,
-      [weekId, d.cat, i + 1, d.name, d.diet, d.start]
-    );
-    const dishId = dr.rows[0].id;
-    for (const [si, sname] of SESSION_NAMES.entries()) {
-      await pool.query(
-        'INSERT INTO sessions (dish_id,session_idx,session_name,used) VALUES ($1,$2,$3,0)',
-        [dishId, si, sname]
+  async function insertWeekDishes(wid: number, startQty: (d: typeof dishDefs[0]) => number) {
+    for (const [i, d] of dishDefs.entries()) {
+      const dr = await pool.query<{ id: number }>(
+        `INSERT INTO dishes (week_id,category,sort_order,name,diet,freezer,start,ordered,corrections)
+         VALUES ($1,$2,$3,$4,$5,'',   $6,    0,      0) RETURNING id`,
+        [wid, d.cat, i + 1, d.name, d.diet, startQty(d)]
       );
+      const dishId = dr.rows[0].id;
+      for (const [si, sname] of SESSION_NAMES.entries()) {
+        await pool.query(
+          'INSERT INTO sessions (dish_id,session_idx,session_name,used) VALUES ($1,$2,$3,0)',
+          [dishId, si, sname]
+        );
+      }
     }
   }
+
+  const week1Res = await pool.query<{ id: number }>(
+    "INSERT INTO weeks (label, sort_order) VALUES ('Week 1', 1) RETURNING id"
+  );
+  const weekId = week1Res.rows[0].id;
+  await insertWeekDishes(weekId, d => d.start);
+
+  // Seed a second week so E2E export tests can switch to a non-first week without UI add-week flow
+  const week2Res = await pool.query<{ id: number }>(
+    "INSERT INTO weeks (label, sort_order) VALUES ('Week 2', 2) RETURNING id"
+  );
+  await insertWeekDishes(week2Res.rows[0].id, () => 0);
+
+  await pool.query(
+    "INSERT INTO app_settings (key, value) VALUES ('active_week_id', $1) ON CONFLICT (key) DO UPDATE SET value=$1",
+    [weekId.toString()]
+  );
 }

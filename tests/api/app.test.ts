@@ -32,10 +32,10 @@ describe('Route protection', () => {
     expect(res.headers.location).toMatch(/login/);
   });
 
-  it('GET /version redirects unauthenticated requests to login', async () => {
+  it('GET /version is publicly accessible without authentication', async () => {
     const res = await request(BASE).get('/mealstock/version');
-    expect(res.status).toBe(302);
-    expect(res.headers.location).toMatch(/login/);
+    expect(res.status).toBe(200);
+    expect(typeof (res.body as { version: unknown }).version).toBe('number');
   });
 });
 

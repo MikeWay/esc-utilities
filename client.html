@@ -337,7 +337,7 @@ function connectWS() {
   const proto = location.protocol === 'https:' ? 'wss' : 'ws';
   ws = new WebSocket(`${proto}://${location.host}${window.__BASE_PATH__ || ''}`);
   ws.onopen  = () => { setSyncStatus('connected','Live'); reconnDelay = 2000; };
-  ws.onclose = () => { setSyncStatus('error','Reconnecting…'); setTimeout(connectWS, reconnDelay); reconnDelay = Math.min(reconnDelay*1.5,15000); };
+  ws.onclose = () => { setSyncStatus('error','Reconnecting…'); setTimeout(connectWS, reconnDelay); reconnDelay = Math.min(reconnDelay*1.5,15000); checkVersion(); };
   ws.onerror = () => setSyncStatus('error','Error');
   ws.onmessage = evt => {
     const msg = JSON.parse(evt.data);
@@ -775,7 +775,10 @@ async function checkVersion(){
   try{
     const r=await fetch((window.__BASE_PATH__||'')+'/version');
     if(!r.ok) return;
-    const {version,appVersion}=await r.json();
+    if(r.redirected){location.reload();return;}
+    const data=await r.json().catch(()=>null);
+    if(!data) return;
+    const {version,appVersion}=data;
     if(serverVersion===null){
       serverVersion=version;
       const el=document.getElementById('versionDisplay');
@@ -787,6 +790,13 @@ async function checkVersion(){
 }
 setInterval(checkVersion,60000);
 checkVersion();
+
+window.addEventListener('pagehide', () => {
+  const el = document.activeElement;
+  if (el instanceof HTMLInputElement && el.type === 'number' && el.dataset.field) {
+    handleInput(el);
+  }
+});
 </script>
 </body>
 </html>
