@@ -32,10 +32,12 @@
   .header-inner{display:flex;align-items:center;justify-content:space-between;min-height:56px;gap:12px;max-width:1400px;margin:0 auto;flex-wrap:wrap;padding:6px 0}
   .app-title{font-size:17px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px;flex-shrink:0}
   .app-title svg{color:var(--accent)}
-  .week-tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1;justify-content:center}
-  .week-tabs::-webkit-scrollbar{display:none}
+  .week-tabs{display:flex;gap:4px;flex:1;justify-content:center;align-items:center}
   .week-tab{padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text2);white-space:nowrap;transition:all .15s}
   .week-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .tab-nav-btn{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;transition:all .15s}
+  .tab-nav-btn:hover:not(:disabled){background:var(--surface2);color:var(--text)}
+  .tab-nav-btn:disabled{opacity:0.3;cursor:default}
   .add-week-btn{width:28px;height:28px;border-radius:50%;border:1.5px dashed var(--border2);background:transparent;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;transition:all .15s}
   .add-week-btn:hover{border-color:var(--accent);color:var(--accent)}
   .header-actions{display:flex;gap:6px;flex-shrink:0;align-items:center}
@@ -326,6 +328,7 @@ const LOW        = 3;
 
 const isAdmin        = !!(window.__USER__ && window.__USER__.is_admin);
 let state            = {activeWeek:0, weeks:[], freezerOptions:[]};
+let tabWindowStart   = 0;
 let collapsed        = {};
 let auditData        = [];
 let auditVisible     = false;
@@ -343,6 +346,7 @@ function connectWS() {
     const msg = JSON.parse(evt.data);
     if (msg.type === 'full_state') {
       state = msg.data;
+      tabWindowStart = Math.max(0, state.weeks.length - 3);
       render();
       showToast('Synced');
     } else if (msg.type === 'cell_update') {
@@ -355,6 +359,7 @@ function connectWS() {
     } else if (msg.type === 'set_active_week') {
       if (msg.weekIdx >= state.weeks.length) { ws.close(); return; }
       state.activeWeek = msg.weekIdx;
+      ensureActiveWeekVisible();
       renderTabs(); renderSections(); renderSummaryBar(); renderLowStock();
     } else if (msg.type === 'update_freezer') {
       const {weekIdx,cat,mi,value} = msg;
@@ -398,9 +403,38 @@ function weekSummary(wi) {
 // ── Render ─────────────────────────────────────────────────────────
 function render() { renderTabs(); renderSummaryBar(); renderLowStock(); renderSections(); }
 
+function ensureActiveWeekVisible() {
+  const n = state.weeks.length, win = Math.min(3, n);
+  const aw = state.activeWeek;
+  if (aw < tabWindowStart) tabWindowStart = aw;
+  else if (aw >= tabWindowStart + win) tabWindowStart = Math.max(0, aw - win + 1);
+}
+
+function shiftTabWindow(dir) {
+  const n = state.weeks.length;
+  tabWindowStart = Math.max(0, Math.min(tabWindowStart + dir, n - Math.min(3, n)));
+  renderTabs();
+}
+
 function renderTabs() {
+  const n = state.weeks.length;
+  const win = Math.min(3, n);
+  tabWindowStart = Math.max(0, Math.min(tabWindowStart, n - win));
+
+  const tabs = state.weeks.slice(tabWindowStart, tabWindowStart + win)
+    .map((w, j) => {
+      const i = tabWindowStart + j;
+      return `<button class="week-tab${i===state.activeWeek?' active':''}" onclick="setWeek(${i})">${w.label}</button>`;
+    }).join('');
+
+  const showNav = n > 3;
+  const prevDis = tabWindowStart === 0;
+  const nextDis = tabWindowStart + win >= n;
+  const prev = showNav ? `<button class="tab-nav-btn" onclick="shiftTabWindow(-1)" ${prevDis?'disabled':''}>&#8592;</button>` : '';
+  const next = showNav ? `<button class="tab-nav-btn" onclick="shiftTabWindow(1)" ${nextDis?'disabled':''}>&#8594;</button>` : '';
+
   document.getElementById('weekTabs').innerHTML =
-    state.weeks.map((w,i)=>`<button class="week-tab${i===state.activeWeek?' active':''}" onclick="setWeek(${i})">${w.label}</button>`).join('')+
+    prev + tabs + next +
     `<button class="add-week-btn" onclick="openManageWeeks()">＋</button>`;
 }
 
@@ -599,6 +633,7 @@ function flashSaved() {
 function setWeek(i) {
   state.activeWeek=i;
   send({type:'set_active_week',weekIdx:i});
+  ensureActiveWeekVisible();
   renderTabs(); renderSections(); renderSummaryBar(); renderLowStock();
 }
 function toggleSection(cat){collapsed[cat]=!collapsed[cat];renderSections();}
