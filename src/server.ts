@@ -516,7 +516,7 @@ wss.on('connection', async (ws, req) => {
         await saveActiveWeek(cachedState.weeks[cachedState.activeWeek].dbId);
         broadcast({ type: 'full_state', data: cachedState }, ws);
         ws.send(JSON.stringify({ type: 'full_state', data: cachedState }));
-        pool.query("SELECT pg_notify('trigger_backup', '')").catch(() => {});
+        pool.query("INSERT INTO app_settings (key,value) VALUES ('backup_requested_at',NOW()::text) ON CONFLICT (key) DO UPDATE SET value=NOW()::text").catch(() => {});
 
       } else if (msg.type === 'add_dish') {
         const weekDbIds = cachedState!.weeks.map(w => w.dbId);
@@ -542,7 +542,7 @@ wss.on('connection', async (ws, req) => {
         cachedState = await loadFullState();
         broadcast({ type: 'full_state', data: cachedState }, ws);
         ws.send(JSON.stringify({ type: 'full_state', data: cachedState }));
-        pool.query("SELECT pg_notify('trigger_backup', '')").catch(() => {});
+        pool.query("INSERT INTO app_settings (key,value) VALUES ('backup_requested_at',NOW()::text) ON CONFLICT (key) DO UPDATE SET value=NOW()::text").catch(() => {});
 
       } else if (msg.type === 'delete_dish') {
         if (!user?.is_admin) throw new Error('Admin only');
@@ -554,7 +554,7 @@ wss.on('connection', async (ws, req) => {
         ws.send(JSON.stringify({ type: 'full_state', data: cachedState }));
 
       } else if (msg.type === 'backup_db') {
-        pool.query("SELECT pg_notify('trigger_backup', '')").catch(() => {});
+        pool.query("INSERT INTO app_settings (key,value) VALUES ('backup_requested_at',NOW()::text) ON CONFLICT (key) DO UPDATE SET value=NOW()::text").catch(() => {});
 
       } else if (msg.type === 'update_freezer') {
         const dish = cachedState!.weeks[msg.weekIdx]?.cats[msg.cat as Category]?.[msg.mi];

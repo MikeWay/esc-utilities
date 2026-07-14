@@ -779,12 +779,10 @@ export function createAuthRouter(
       res.status(403).json({ ok: false, error: 'Forbidden' }); return;
     }
 
-    const before = await pool.query<{ value: string }>(
-      "SELECT value FROM app_settings WHERE key='last_backup_at'"
+    const requestedRes = await pool.query<{ value: string }>(
+      "INSERT INTO app_settings (key,value) VALUES ('backup_requested_at',NOW()::text) ON CONFLICT (key) DO UPDATE SET value=NOW()::text RETURNING value"
     );
-    const beforeTime = before.rows[0]?.value ?? null;
-
-    await pool.query("SELECT pg_notify('trigger_backup', '')");
+    const requestedAt = requestedRes.rows[0].value;
 
     const deadline = Date.now() + 30000;
     while (Date.now() < deadline) {
@@ -793,7 +791,7 @@ export function createAuthRouter(
         "SELECT value FROM app_settings WHERE key='last_backup_at'"
       );
       const afterTime = after.rows[0]?.value ?? null;
-      if (afterTime && afterTime !== beforeTime) {
+      if (afterTime && new Date(afterTime) >= new Date(requestedAt)) {
         res.json({ ok: true, backedUpAt: afterTime }); return;
       }
     }

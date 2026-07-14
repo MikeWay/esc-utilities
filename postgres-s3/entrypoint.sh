@@ -32,14 +32,21 @@ fi
 # Write sentinel so the app container knows restore is done
 psql -U "$USER" -d "$DB" -c "CREATE TABLE IF NOT EXISTS _restore_complete (id INT PRIMARY KEY DEFAULT 1, done BOOL NOT NULL DEFAULT true); INSERT INTO _restore_complete VALUES(1, true) ON CONFLICT(id) DO UPDATE SET done=true;" > /dev/null 2>&1 || true
 
-# On-demand backup listener: polls every 5 s; pg_notify('trigger_backup','') wakes it up
-# psql prints any notification received during pg_sleep, which grep then catches.
+# On-demand backup poller: checks app_settings.backup_requested_at every 2s.
+# The app writes backup_requested_at when a backup is wanted; we run pg_dump and
+# write last_backup_at when done so the app can detect completion.
 if [ "$S3_BACKUP_DISABLED" != "true" ] && [ -n "$S3_BUCKET" ]; then
 (
   while true; do
-    if psql -U "$USER" -d "$DB" -t -A \
-        -c "LISTEN trigger_backup; SELECT pg_sleep(5);" 2>/dev/null \
-        | grep -q "trigger_backup"; then
+    NEED=$(psql -U "$USER" -d "$DB" -t -A -c "
+      SELECT 't' FROM app_settings a1
+      WHERE a1.key='backup_requested_at'
+      AND NOT EXISTS (
+        SELECT 1 FROM app_settings a2
+        WHERE a2.key='last_backup_at'
+          AND a2.value::timestamptz >= a1.value::timestamptz
+      );" 2>/dev/null || echo '')
+    if [ "$NEED" = 't' ]; then
       echo "$(date -u +%H:%M:%S): On-demand backup triggered..."
       if pg_dump -U "$USER" -Fc "$DB" > /tmp/mealstock-od.dump 2>/dev/null; then
         aws s3 cp /tmp/mealstock-od.dump "s3://${S3_BUCKET}/mealstock.dump" --quiet
@@ -51,6 +58,7 @@ if [ "$S3_BACKUP_DISABLED" != "true" ] && [ -n "$S3_BUCKET" ]; then
         echo "$(date -u +%H:%M:%S): On-demand backup failed."
       fi
     fi
+    sleep 2
   done
 ) &
 fi
