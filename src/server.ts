@@ -516,6 +516,7 @@ wss.on('connection', async (ws, req) => {
         await saveActiveWeek(cachedState.weeks[cachedState.activeWeek].dbId);
         broadcast({ type: 'full_state', data: cachedState }, ws);
         ws.send(JSON.stringify({ type: 'full_state', data: cachedState }));
+        pool.query("SELECT pg_notify('trigger_backup', '')").catch(() => {});
 
       } else if (msg.type === 'add_dish') {
         const weekDbIds = cachedState!.weeks.map(w => w.dbId);
@@ -541,6 +542,7 @@ wss.on('connection', async (ws, req) => {
         cachedState = await loadFullState();
         broadcast({ type: 'full_state', data: cachedState }, ws);
         ws.send(JSON.stringify({ type: 'full_state', data: cachedState }));
+        pool.query("SELECT pg_notify('trigger_backup', '')").catch(() => {});
 
       } else if (msg.type === 'delete_dish') {
         if (!user?.is_admin) throw new Error('Admin only');
