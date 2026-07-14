@@ -33,7 +33,7 @@ fi
 psql -U "$USER" -d "$DB" -c "CREATE TABLE IF NOT EXISTS _restore_complete (id INT PRIMARY KEY DEFAULT 1, done BOOL NOT NULL DEFAULT true); INSERT INTO _restore_complete VALUES(1, true) ON CONFLICT(id) DO UPDATE SET done=true;" > /dev/null 2>&1 || true
 
 # Background backup loop every 15 minutes (skipped if S3_BACKUP_DISABLED is set)
-if [ -z "$S3_BACKUP_DISABLED" ]; then
+if [ "$S3_BACKUP_DISABLED" != "true" ]; then
 (
   while true; do
     sleep 900
