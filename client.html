@@ -353,6 +353,7 @@ function connectWS() {
       applyRemoteCell(weekIdx,cat,mi,field,si,value);
       renderSummaryBar(); renderLowStock();
     } else if (msg.type === 'set_active_week') {
+      if (msg.weekIdx >= state.weeks.length) { ws.close(); return; }
       state.activeWeek = msg.weekIdx;
       renderTabs(); renderSections(); renderSummaryBar(); renderLowStock();
     } else if (msg.type === 'update_freezer') {
@@ -659,6 +660,7 @@ function openManageWeeks() {
 function submitAddWeek() {
   const dateVal=document.getElementById('newWeekDate').value;
   if(!dateVal){showToast('Please pick a date');return;}
+  if(!ws||ws.readyState!==1){showToast('Not connected — please wait for sync');return;}
   const d=new Date(dateVal);
   const label=`w/c ${d.getDate()} ${d.toLocaleString('en-GB',{month:'short'})} ${d.getFullYear()}`;
   send({type:'add_week',label});
@@ -669,6 +671,7 @@ function submitAddWeek() {
 // ── Export CSV (stock) ─────────────────────────────────────────────
 function exportCSV() {
   const week=state.weeks[state.activeWeek];
+  if(!week){showToast('Not synced yet — please wait');return;}
   const headers=['Category','Dish','Dietary','Start','Ordered',...SESSIONS,'Corrections','Remainder'];
   const rows=[headers.join(',')];
   const wi=state.activeWeek;

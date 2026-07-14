@@ -596,6 +596,11 @@ server.on('upgrade', (req: http.IncomingMessage, socket: net.Socket, head: Buffe
   });
 });
 
+// Ping all clients every 30s to keep WebSocket connections alive through nginx
+setInterval(() => {
+  wss.clients.forEach(c => { if (c.readyState === WebSocket.OPEN) c.ping(); });
+}, 30000);
+
 // ── Start ───────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
