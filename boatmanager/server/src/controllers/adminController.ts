@@ -497,7 +497,7 @@ export class AdminController {
             const newUser = new AdminPerson(email, firstName, lastName);
             await newUser.setPassword(password); // setPassword hashes the password
             await dao.adminPersonManager.saveAdminPerson(newUser);
-            res.redirect('/admin/listUsers');
+            res.redirect((process.env.BASE_PATH || '') + '/admin/listUsers');
         } catch (error) {
             console.error('Error creating admin user:', error);
             res.render('error', { title: 'Add Admin User', error: 'Failed to create admin user' });

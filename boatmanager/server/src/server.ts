@@ -47,10 +47,12 @@ interface ErrorHandler {
   (err: Error, req: Request, res: Response, next: NextFunction): void;
 }
 
+const BASE_PATH = process.env.BASE_PATH || '';
+
 const errorHandler: ErrorHandler = (err, req, res, next) => {
   //console.error(err.stack);
   if(err.message === 'NOT-ADMIN') {
-    res.redirect(302, '/admin-login');
+    res.redirect(302, BASE_PATH + '/admin-login');
   }
   next();
 };
