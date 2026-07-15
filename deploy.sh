@@ -63,19 +63,32 @@ PG_TAG=$(aws lightsail push-container-image \
   | grep -oP '(?<=as "):[^"]+')
 echo "    postgres-s3 image: $PG_TAG"
 
+# ── boatmanager ────────────────────────────────────────────────
+echo "==> Building boatmanager..."
+docker build -t boatmanager ./boatmanager
+
+echo "==> Pushing boatmanager..."
+BM_TAG=$(aws lightsail push-container-image \
+  --region "$REGION" --service-name "$SERVICE" \
+  --label boatmanager --image boatmanager \
+  | grep -oP '(?<=as "):[^"]+')
+echo "    boatmanager image: $BM_TAG"
+
 # ── update deploy JSON ─────────────────────────────────────────
 echo "==> Updating $DEPLOY_JSON..."
-python3 - "$DEPLOY_JSON" "$APP_TAG" "$SCM_TAG" "$PG_TAG" <<'EOF'
+python3 - "$DEPLOY_JSON" "$APP_TAG" "$SCM_TAG" "$PG_TAG" "$BM_TAG" <<'EOF'
 import sys, json
-path, app_tag, scm_tag, pg_tag = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+path, app_tag, scm_tag, pg_tag, bm_tag = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5]
 with open(path) as f: d = json.load(f)
-d["containers"]["app"]["image"]        = app_tag
-d["containers"]["scm-tools"]["image"]  = scm_tag
-d["containers"]["postgres"]["image"]   = pg_tag
+d["containers"]["app"]["image"]         = app_tag
+d["containers"]["scm-tools"]["image"]   = scm_tag
+d["containers"]["postgres"]["image"]    = pg_tag
+d["containers"]["boatmanager"]["image"] = bm_tag
 with open(path, "w") as f: json.dump(d, f, indent=2)
-print(f"  app       -> {app_tag}")
-print(f"  scm-tools -> {scm_tag}")
-print(f"  postgres  -> {pg_tag}")
+print(f"  app         -> {app_tag}")
+print(f"  scm-tools   -> {scm_tag}")
+print(f"  postgres    -> {pg_tag}")
+print(f"  boatmanager -> {bm_tag}")
 EOF
 
 # ── deploy ─────────────────────────────────────────────────────
