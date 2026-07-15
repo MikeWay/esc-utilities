@@ -13,7 +13,7 @@ WORKDIR /build
 COPY server/package*.json server/tsconfig.json server/tsconfig.prod.json ./
 COPY server/src/ ./src/
 RUN npm ci
-RUN npm run build:prod
+RUN mkdir -p dist/keys && npm run build:prod
 
 # ── Runtime ──────────────────────────────────────────────────────
 FROM node:22-bookworm-slim AS runtime
