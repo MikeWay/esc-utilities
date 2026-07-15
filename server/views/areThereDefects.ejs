@@ -1,0 +1,21 @@
+<form id="theForm" class="bp3-form-group">
+    <p class="bp3-text-large">Does the vessel have faults, damage or have you used any equipment that needs to be
+        replaced?</p>
+    <div class="d-flex justify-content-center">
+        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+            <input type="radio" class="btn-check" name="defects" id="yes" value="yes" required autocomplete="off">
+            <label class="btn btn-outline-primary" for="yes">Yes</label>
+
+            <input type="radio" class="btn-check" name="defects" id="no" value="no" required autocomplete="off">
+            <label class="btn btn-outline-primary" for="no">No</label> </label>
+        </div>
+    </div>
+
+</form>
+<script>
+    function isValid() {
+        const yes = document.getElementById('yes').checked;
+        const no = document.getElementById('no').checked;
+        return yes || no;
+    }
+</script>

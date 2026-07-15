@@ -1,0 +1,15 @@
+<h6 class="text-muted text-uppercase small mb-1 mt-2">Developer Options</h6>
+<p class="text-danger small">These actions are destructive and intended for development/testing only.</p>
+<ul class="list-group mb-3" style="background-color: #FFC107;">
+    <li class="list-group-item" style="background-color: #FFC107;">
+        <a href="/admin/deleteAllUsers" class="btn btn-link text-danger">Delete All Users</a>
+    </li>
+    <li class="list-group-item" style="background-color: #FFC107;">
+        <form action="/admin/clearAllBoatFaults" method="POST" style="display:inline;padding-left: 1em;">
+            <button type="submit" class="btn btn-link p-0 text-danger">
+                Clear all Boat Faults
+            </button>
+        </form>
+    </li>
+</ul>
+<a href="/admin" class="btn btn-outline-secondary btn-sm mt-2">Back to Admin</a>

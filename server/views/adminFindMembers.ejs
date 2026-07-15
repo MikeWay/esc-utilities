@@ -1,0 +1,43 @@
+<h2>Find Members by Surname</h2>
+
+<form action="/admin/findMembers" method="POST" class="mb-4">
+    <div class="input-group" style="max-width: 300px;">
+        <input type="text" name="letter" class="form-control" placeholder="First letter of surname"
+            maxlength="1" value="<%= locals.searchLetter || '' %>" required autofocus>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>
+
+<% if (locals.error) { %>
+    <div class="alert alert-warning"><%= locals.error %></div>
+<% } %>
+
+<% if (locals.members !== null && locals.members !== undefined) { %>
+    <% if (locals.members.length === 0) { %>
+        <p class="text-muted">No members found with a surname starting with '<%= locals.searchLetter.toUpperCase() %>'.</p>
+    <% } else { %>
+        <p class="text-muted"><%= locals.members.length %> member<%= locals.members.length !== 1 ? 's' : '' %> found.</p>
+        <table class="table table-striped table-bordered align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Date of Birth</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% locals.members.forEach(function(member) { %>
+                    <tr>
+                        <td><%= member.firstName %></td>
+                        <td><%= member.lastName %></td>
+                        <td>
+                            <% if (member.birthDay && member.birthMonth) { %>
+                                <%= member.birthDay %>/<%= member.birthMonth %><%= member.birthYear ? '/' + member.birthYear : '' %>
+                            <% } %>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    <% } %>
+<% } %>

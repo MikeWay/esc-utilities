@@ -1,0 +1,8 @@
+<h1>Upload Users CSV</h1>
+<p>The file format is: <pre>id,firstName,lastName,dob</pre>
+e.g.<pre>1,Mike,Way,14-07-60</pre></p>
+<form action="/admin/upload-users" method="POST" enctype="multipart/form-data">
+    <label for="csvFile">Select CSV file:</label>
+    <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
+    <button type="submit">Upload</button>
+</form>

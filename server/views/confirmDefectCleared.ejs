@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirm Defect Cleared</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f9f9f9; }
+        .dialog-container {
+            max-width: 400px;
+            margin: 80px auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 32px 24px;
+            text-align: center;
+        }
+        .dialog-buttons {
+            margin-top: 24px;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+        button {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .confirm { background: #28a745; color: #fff; }
+        .cancel { background: #ccc; color: #333; }
+    </style>
+</head>
+<body>
+    <div class="dialog-container">
+        <h2>Confirm Defect Clearance</h2>
+        <p>Are you sure you want to mark this defect: <b><%= defectName %></b> as cleared?</p>
+        <form method="POST" action="/admin/confirmDefectCleared">
+            <div class="dialog-buttons">
+                <input type="hidden" name="defectId" value="<%= defectId %>">
+                <input type="hidden" name="boatId" value="<%= boatId %>">
+                <button type="submit" name="confirm" value="yes" class="confirm">Yes</button>
+                <button type="submit" name="confirm" value="no" class="cancel">No</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

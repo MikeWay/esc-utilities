@@ -1,0 +1,62 @@
+<mat-card appearance="outlined">
+    <mat-card-header>
+        <div style="text-align: center; width: 100%;">Tell us who you are</div>
+    </mat-card-header>
+    <mat-card-content>
+        <label for="family-initial">First letter of family name:</label>
+        <div style="width: 100%; display: flex; justify-content: center;">
+            <div class="parent-container flex-centered">
+            @for(row of qwertyRows; track row; let index = $index) {
+            <mat-chip-listbox aria-label="family-initial" [ngStyle]="{'width.%': keyBoardWidths[index]}" multiple="false" id="family-initial" >
+                @for(key of row; track key) {
+                <mat-chip-option (selectionChange)="onLetterChange($event)" [selected]="familyInitial === key">{{ key }}</mat-chip-option>
+                }
+            </mat-chip-listbox>
+            }
+            </div>
+        </div>
+        <div style="text-align: center; margin: 16px 0;">
+            Tell us the day, month and (if prompted) year of your birth
+        </div>
+        <div style="display: flex; gap: 16px; justify-content: center;">
+            <mat-form-field appearance="fill">
+            <mat-label>Day of Month</mat-label>
+            <mat-select id="day-select" [(value)]="day" (selectionChange)="contentChanged()">
+                <mat-option value="">Select day</mat-option>
+                <mat-option *ngFor="let day of [].constructor(31); let i = index" [value]="i+1">{{i+1}}</mat-option>
+            </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+            <mat-label>Month</mat-label>
+            <mat-select id="month-select" [(value)]="month" (selectionChange)="contentChanged()">
+                <mat-option value="">Select month</mat-option>
+                <mat-option value="1">January</mat-option>
+                <mat-option value="2">February</mat-option>
+                <mat-option value="3">March</mat-option>
+                <mat-option value="4">April</mat-option>
+                <mat-option value="5">May</mat-option>
+                <mat-option value="6">June</mat-option>
+                <mat-option value="7">July</mat-option>
+                <mat-option value="8">August</mat-option>
+                <mat-option value="9">September</mat-option>
+                <mat-option value="10">October</mat-option>
+                <mat-option value="11">November</mat-option>
+                <mat-option value="12">December</mat-option>
+            </mat-select>
+            </mat-form-field>
+
+            <ng-container *ngIf="enableYearField">
+            <mat-form-field appearance="fill">
+                <mat-label>Year</mat-label>
+                <mat-select id="year-select" [(value)]="year" (selectionChange)="contentChanged()">
+                <mat-option value="">Select year</mat-option>
+                <mat-option *ngFor="let y of years" [value]="y">{{ y }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            </ng-container>
+        </div>
+    </mat-card-content>
+</mat-card>
+<div>
+    <app-show-user-name [userName]="displayUserName"></app-show-user-name>
+</div>

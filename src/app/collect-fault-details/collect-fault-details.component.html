@@ -1,0 +1,17 @@
+
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>Do you have more information about the fault '{{ defect?.name }}'?</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Fault Detail</mat-label>
+            <textarea matInput [(ngModel)]="faultDetail" rows="4" cols="60"></textarea>
+        </mat-form-field>
+
+        <div class="button-row">
+            <button mat-raised-button color="primary" (click)="onOk()" mat-dialog-close>Done</button>
+            <button mat-raised-button color="warn" (click)="onCancel()" mat-dialog-close>Nothing to Report</button>
+        </div>
+    </mat-card-content>
+</mat-card>

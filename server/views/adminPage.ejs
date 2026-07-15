@@ -1,0 +1,69 @@
+<h6 class="text-muted text-uppercase small mb-1 mt-2">Reports</h6>
+<ul class="list-group mb-3">
+    <li class="list-group-item">
+        <a href="/admin/report" class="btn btn-link">Generate Log Reports</a>
+    </li>
+    <li class="list-group-item">
+        <a href="/admin/boatsWithIssues" class="btn btn-link">Boats with Issues</a>
+    </li>
+    <li class="list-group-item">
+        <a href="/admin/boatsCheckedOut" class="btn btn-link">Show Boats Currently Checked Out</a>
+    </li>
+    <li class="list-group-item">
+        <a href="/admin/engineHoursByUse" class="btn btn-link">List Engine Hours by Use</a>
+    </li>
+    <li class="list-group-item">
+        <a href="/admin/engineHoursByUseByBoat" class="btn btn-link">List Engine Hours by Use for each boat</a>
+    </li>
+    <li class="list-group-item">
+        <a href="/admin/usageReport" class="btn btn-link">Boat Usage Report (Last 7 Days)</a>
+    </li>
+    <li class="list-group-item">
+        <a href="/admin/weeklyReport" class="btn btn-link">Send Weekly Report Now</a>
+    </li>
+</ul>
+
+<h6 class="text-muted text-uppercase small mb-1">Maintenance</h6>
+<ul class="list-group mb-3">
+    <li class="list-group-item">
+        <a href="/admin/listUsers" class="btn btn-link">Maintain Admin Users</a>
+    </li>
+    <li class="list-group-item">
+        <form action="/admin/checkInAll" method="POST" style="display:inline;padding-left: 1em;">
+            <button type="submit" class="btn btn-link p-0">Check In All Boats</button>
+        </form>
+    </li>
+    <li class="list-group-item">
+        <a href="/admin/loadUsers" class="btn btn-link">Upload New Users as CSV</a>
+    </li>
+    <li class="list-group-item">
+        <a href="/admin/trialUploadUsers" class="btn btn-link">Trial Upload Users as CSV</a>
+    </li>
+    <li class="list-group-item">
+        <a href="/admin/findMembers" class="btn btn-link">Find Members by Surname</a>
+    </li>
+</ul>
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <a href="/admin/developerOptions" class="btn btn-outline-warning btn-sm">Developer Options</a>
+    <div>
+        <button type="button" class="btn btn-outline-info btn-sm me-2" data-bs-toggle="modal" data-bs-target="#aboutModal">About</button>
+        <a href="/admin/logout" class="btn btn-outline-secondary btn-sm">Log Out</a>
+    </div>
+</div>
+
+<!-- About modal -->
+<div class="modal fade" id="aboutModal" tabindex="-1" aria-labelledby="aboutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="aboutModalLabel">Boat Manager</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-1">Version: <strong><%= locals.version %></strong></p>
+                <p class="mb-0 text-muted small">Exe Sailing Club</p>
+            </div>
+        </div>
+    </div>
+</div>

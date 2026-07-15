@@ -1,0 +1,56 @@
+<div class="container mt-5">
+
+    <div class="card mx-auto" style="max-width: 600px;">
+        <div class="card-body">
+            <h3 class="card-title mb-4">Add Admin User</h3>
+            <form action="/admin/add-admin-user" method="POST">
+                <div class="mb-3">
+                    <label for="firstName" class="form-label">First Name:</label>
+                    <input type="text" id="firstName" name="firstName" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="lastName" class="form-label">Last Name:</label>
+                    <input type="text" id="lastName" name="lastName" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email:</label>
+                    <input type="email" id="email" name="email" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password:</label>
+                    <input type="password" id="password" name="password" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Confirm Password:</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+                    <div id="passwordError" class="text-danger mt-1" style="display:none;">Passwords do not match.</div>
+                </div>
+                <script>
+                    const form = document.querySelector('form');
+                    const password = document.getElementById('password');
+                    const confirmPassword = document.getElementById('confirmPassword');
+                    const errorDiv = document.getElementById('passwordError');
+
+                    form.addEventListener('submit', function (e) {
+                        if (password.value !== confirmPassword.value) {
+                            errorDiv.style.display = 'block';
+                            confirmPassword.classList.add('is-invalid');
+                            e.preventDefault();
+                        } else {
+                            errorDiv.style.display = 'none';
+                            confirmPassword.classList.remove('is-invalid');
+                        }
+                    });
+
+                    confirmPassword.addEventListener('input', function () {
+                        if (password.value === confirmPassword.value) {
+                            errorDiv.style.display = 'none';
+                            confirmPassword.classList.remove('is-invalid');
+                        }
+                    });
+                </script>
+                <button type="submit" class="btn btn-primary w-100">Add User</button>
+            </form>
+        </div>
+    </div>
+</div>

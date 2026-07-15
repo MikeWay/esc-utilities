@@ -1,0 +1,19 @@
+<div id="container">
+  @if (showVersionMismatch) {
+    <div style="background:#fff3cd;color:#856404;border:1px solid #ffc107;padding:10px 16px;text-align:center;font-size:0.9em;">
+      A new version is available. Please <strong>refresh your browser</strong> to get the latest version.
+    </div>
+  }
+  <main id="main-content">
+    <router-outlet></router-outlet>
+  </main>
+  <footer style="display: flex; justify-content: space-between; padding: 16px; border-top: 1px solid #ccc;">
+    <button matButton="elevated" (click)="onPreviousClick()" [disabled]="!currentState?.enablePreviousButton" id="previousButton">Previous</button>
+    <button mat-icon-button aria-label="Home" (click)="onHomeClick()">
+      <mat-icon>home</mat-icon>
+    </button>
+    <button matButton="elevated" (click)="onNextClick()" [disabled]="!currentState?.enableNextButton" id="nextButton">Next</button>
+  </footer>
+  <p>{{ version }}</p>
+</div>
+

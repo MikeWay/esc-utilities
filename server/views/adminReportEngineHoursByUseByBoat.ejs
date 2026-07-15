@@ -1,0 +1,26 @@
+<% for (const [boatName, engineHoursMap] of boatMap.entries()) { %>
+    <h3><%= boatName %></h3>
+    `<ul>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Use Group</th>
+                    <th>Hours</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for (const [reason, hours] of engineHoursMap.entries()) { %>
+                    <tr>
+                        <td><%= reason %></td>
+                        <td><%= hours.toFixed(2) %></td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+
+</ul>
+<div class="mt-3">
+    <strong>Total Engine Hours:</strong>
+    <%= boatTotalsMap.get(boatName).toFixed(2) %>
+</div>
+<% } %>

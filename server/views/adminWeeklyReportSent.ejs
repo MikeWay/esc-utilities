@@ -1,0 +1,10 @@
+<% if (locals.reportError) { %>
+    <div class="alert alert-danger" role="alert">
+        <%= locals.reportError %>
+    </div>
+<% } else { %>
+    <div class="alert alert-success" role="alert">
+        <%= locals.reportMessage %>
+    </div>
+<% } %>
+<a href="/admin" class="btn btn-outline-secondary mt-2">Back to Admin</a>
