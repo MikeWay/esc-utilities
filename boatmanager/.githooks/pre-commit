@@ -1,0 +1,30 @@
+#!/bin/bash
+# Auto-increment server version by 0.01 on each commit
+
+VERSION_FILE="server/src/version.ts"
+
+# Extract current version string e.g. "1.00"
+current=$(grep -oP '(?<=VERSION = ")[^"]+' "$VERSION_FILE")
+
+if [ -z "$current" ]; then
+    echo "pre-commit: could not find VERSION in $VERSION_FILE — skipping version bump"
+    exit 0
+fi
+
+# Increment by 0.01 using awk (avoids floating-point string issues)
+new=$(awk "BEGIN { printf \"%.2f\", $current + 0.01 }")
+
+# Update the file
+sed -i "s/VERSION = \"$current\"/VERSION = \"$new\"/" "$VERSION_FILE"
+
+ENV_FILE="src/environments/environment.ts"
+DEV_ENV_FILE="src/environments/environment.development.ts"
+
+# Update version in Angular environment files
+sed -i "s/version: '$current'/version: '$new'/" "$ENV_FILE"
+sed -i "s/version: '$current'/version: '$new'/" "$DEV_ENV_FILE"
+
+# Stage all version files
+git add "$VERSION_FILE" "$ENV_FILE" "$DEV_ENV_FILE"
+
+echo "pre-commit: version bumped $current → $new"

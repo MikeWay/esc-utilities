@@ -1,0 +1,16 @@
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <div style="text-align: center; width: 100%;">Tell us about the problem(s)</div>
+  </mat-card-header>
+  <mat-card-content>
+
+<mat-chip-listbox aria-label="Problem Selection" class="mat-mdc-chip-set-stacked" 
+    multiple="true" (change)="onProblemListChange($event)">
+    @for(problem of chips; track problem.id) {
+        <mat-chip-option [value]="problem" [selected]="problem.selected">{{ problem.defect.defectType.name }}</mat-chip-option>
+    }
+
+</mat-chip-listbox>
+
+  </mat-card-content>
+</mat-card>

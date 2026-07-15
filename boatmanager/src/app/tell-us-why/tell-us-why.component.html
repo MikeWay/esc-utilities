@@ -1,0 +1,14 @@
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <div style="text-align: center; width: 100%;">Tell us why you are taking the boat out</div>
+  </mat-card-header>
+  <mat-card-content>
+
+
+<mat-chip-listbox aria-label="Boat Selection" class="mat-mdc-chip-set-stacked">
+    @for(reason of reasons; track reason) {
+        <mat-chip-option [selected]="reason === selectedReason" [value]="reason" (selectionChange)="onReasonChange($event)">{{ reason }}</mat-chip-option>
+    }
+</mat-chip-listbox>
+</mat-card-content>
+</mat-card>

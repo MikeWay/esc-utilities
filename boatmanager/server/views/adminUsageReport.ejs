@@ -1,0 +1,34 @@
+
+    <h1>Boat Usage Report</h1>
+    <p class="text-muted">Showing usage from <strong><%= dateRange %></strong></p>
+
+    <% if (!entries || entries.length === 0) { %>
+        <p>No usage in the last 7 days.</p>
+    <% } else { %>
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>Boat</th>
+                <th>Checked Out By</th>
+                <th>Check-Out</th>
+                <th>Check-In</th>
+                <th>Duration</th>
+                <th>Reason</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% entries.forEach(function(entry) { %>
+                <tr>
+                    <td><%= entry.boatName %></td>
+                    <td><%= entry.personName %></td>
+                    <td><%= entry.checkOut %></td>
+                    <td><%= entry.checkIn %></td>
+                    <td><%= entry.duration %></td>
+                    <td><%= entry.reason %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+    <% } %>
+
+    <a href="/admin" class="btn btn-outline-secondary btn-sm mt-2">Back to Admin</a>

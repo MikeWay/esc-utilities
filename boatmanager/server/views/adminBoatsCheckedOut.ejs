@@ -1,0 +1,29 @@
+
+    <h1>Boats Checked Out</h1>
+
+    <% if (!boatsCheckedOut || boatsCheckedOut.length === 0) { %>
+        <h3>No boats are currently checked out.</h3>
+        <style>
+            /* hide the table when there are no boats checked out */
+            table.table.table-striped.table-bordered { display: none !important; }
+        </style>
+    <% } %>
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>Boat ID</th>
+                <th>Boat Name</th>
+                <th>Checked Out By</th>
+                <th>Checkout Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% boatsCheckedOut.forEach(function(boat) { %>
+                <tr>
+                    <td><%= boat.id %></td>
+                    <td><%= boat.name %></td>
+                    <td><%= boat.checkedOutToName %></td>
+                    <td><%= (function(d){ d = new Date(d); if (isNaN(d)) return ''; const p = n => n < 10 ? '0' + n : '' + n; return p(d.getDate()) + '/' + p(d.getMonth()+1) + '/' + d.getFullYear() + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()); })(boat.checkedOutAt) %></td>     </tr>
+            <% }); %>
+        </tbody>
+    </table>

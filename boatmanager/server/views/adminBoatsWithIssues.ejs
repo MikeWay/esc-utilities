@@ -1,0 +1,31 @@
+<% if (!boatsWithIssues || boatsWithIssues.length === 0) { %>
+    <h1>All boats are OK!</h1>
+    <style>
+        /* hide the table when there are no boats with issues */
+        table.table.table-striped.table-bordered { display: none !important; }
+    </style>
+<% } %>
+<table class="table table-striped table-bordered">
+    <thead class="thead-dark"></thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th># Issues</th>
+            <th>&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% boatsWithIssues.forEach(function(boat, index) { %>
+            <% if (boat.defects?.reportedDefects?.length > 0) { %>
+                        <tr>
+                            <td><%= boat.id %></td>
+                            <td><%= boat.name %></td>
+                            <td><%= boat.defects.reportedDefects.length %></td>
+                            <td>
+                                <a href="/admin/defectsForBoat/<%= boat.id %>" class="btn btn-primary btn-sm">View Issues</a>
+                            </td>
+                        </tr>
+            <% } %>
+        <% }); %>
+    </tbody>
+</table>

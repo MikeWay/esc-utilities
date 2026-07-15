@@ -1,0 +1,281 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1778060354093,
+  "projectRoot": "/home/mjrw/workNG/BoatManager",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "@angular/core",
+        "version": "20.1.1",
+        "category": "frontend"
+      },
+      {
+        "name": "@playwright/test",
+        "version": "1.54.1",
+        "category": "testing"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "npm run build",
+    "testCommand": "npm test",
+    "lintCommand": null,
+    "devCommand": "npm run start",
+    "scripts": {
+      "ng": "ng",
+      "start": "ng serve",
+      "start-server": "cd server && npm install && npm run start",
+      "build-all": "npm install && npm run build && npm run build-server",
+      "build-all-prod": "npm install && npm run build && npm run build-server-prod",
+      "build": "npm install && ng build",
+      "build-server": "cd server && npm install && npm run build",
+      "build-server-prod": "cd server && npm install && npm run build:prod",
+      "watch": "ng build --watch --configuration development",
+      "test": "ng test",
+      "e2e": "npm run playwright test",
+      "e2eui": "npx playwright test --ui",
+      "gentest": "npx playwright codegen http://localhost:4200",
+      "deploy": "./deploy.sh"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": "ES modules",
+    "testPattern": "*.spec.ts",
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "public",
+      "src",
+      "tests"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "dist": {
+      "path": "dist",
+      "purpose": "Distribution/build output",
+      "fileCount": 0,
+      "lastAccessed": 1778060354076,
+      "keyFiles": []
+    },
+    "playwright-report": {
+      "path": "playwright-report",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1778060354077,
+      "keyFiles": [
+        "index.html"
+      ]
+    },
+    "public": {
+      "path": "public",
+      "purpose": "Public files",
+      "fileCount": 1,
+      "lastAccessed": 1778060354085,
+      "keyFiles": [
+        "favicon.ico"
+      ]
+    },
+    "server": {
+      "path": "server",
+      "purpose": null,
+      "fileCount": 14,
+      "lastAccessed": 1778060354087,
+      "keyFiles": [
+        "README.html",
+        "README.md",
+        "config.json",
+        "config.json.example",
+        "eslint.config.mjs"
+      ]
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 4,
+      "lastAccessed": 1778060354089,
+      "keyFiles": [
+        "index.html",
+        "main.ts",
+        "proxy.conf.json",
+        "styles.sass"
+      ]
+    },
+    "test-results": {
+      "path": "test-results",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1778060354089,
+      "keyFiles": []
+    },
+    "tests": {
+      "path": "tests",
+      "purpose": "Test files",
+      "fileCount": 4,
+      "lastAccessed": 1778060354089,
+      "keyFiles": [
+        "app.flow.spec.ts",
+        "checkin-flow.spec.ts",
+        "e2e.spec.ts",
+        "e2eTestUtils.ts"
+      ]
+    },
+    "tests-examples": {
+      "path": "tests-examples",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1778060354089,
+      "keyFiles": [
+        "demo-todo-app.spec.ts"
+      ]
+    },
+    "~": {
+      "path": "~",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1778060354089,
+      "keyFiles": []
+    },
+    "server/dist": {
+      "path": "server/dist",
+      "purpose": "Distribution/build output",
+      "fileCount": 4,
+      "lastAccessed": 1778060354090,
+      "keyFiles": [
+        "environment.js",
+        "passwordGen.js",
+        "server.js"
+      ]
+    },
+    "server/node_modules": {
+      "path": "server/node_modules",
+      "purpose": "Dependencies",
+      "fileCount": 1,
+      "lastAccessed": 1778060354090,
+      "keyFiles": []
+    },
+    "src/app": {
+      "path": "src/app",
+      "purpose": "Application code",
+      "fileCount": 15,
+      "lastAccessed": 1778060354092,
+      "keyFiles": [
+        "app-state.spec.ts",
+        "app-state.ts",
+        "app.component.html"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "server/src/controllers/adminController.ts",
+      "accessCount": 4,
+      "lastAccessed": 1778060913601,
+      "type": "file"
+    },
+    {
+      "path": "server/src/model/LogManager.ts",
+      "accessCount": 3,
+      "lastAccessed": 1778060897116,
+      "type": "file"
+    },
+    {
+      "path": "server/views/adminPage.ejs",
+      "accessCount": 2,
+      "lastAccessed": 1778060898183,
+      "type": "file"
+    },
+    {
+      "path": "CLAUDE.md",
+      "accessCount": 1,
+      "lastAccessed": 1778060424334,
+      "type": "file"
+    },
+    {
+      "path": "server/src/model/dao.ts",
+      "accessCount": 1,
+      "lastAccessed": 1778060536532,
+      "type": "file"
+    },
+    {
+      "path": "server/src/email/emailService.ts",
+      "accessCount": 1,
+      "lastAccessed": 1778060539541,
+      "type": "file"
+    },
+    {
+      "path": "server/views/adminWeeklyReportForm.ejs",
+      "accessCount": 1,
+      "lastAccessed": 1778060542905,
+      "type": "file"
+    },
+    {
+      "path": "server/views/adminWeeklyReportSent.ejs",
+      "accessCount": 1,
+      "lastAccessed": 1778060543152,
+      "type": "file"
+    },
+    {
+      "path": "server/src/services/weeklyReportService.ts",
+      "accessCount": 1,
+      "lastAccessed": 1778060544931,
+      "type": "file"
+    },
+    {
+      "path": "server/src/environment.ts",
+      "accessCount": 1,
+      "lastAccessed": 1778060547065,
+      "type": "file"
+    },
+    {
+      "path": "server/src/model/EngineHours.ts",
+      "accessCount": 1,
+      "lastAccessed": 1778060548780,
+      "type": "file"
+    },
+    {
+      "path": "server/views/adminBoatsCheckedOut.ejs",
+      "accessCount": 1,
+      "lastAccessed": 1778060889243,
+      "type": "file"
+    },
+    {
+      "path": "server/src/routes/routes.ts",
+      "accessCount": 1,
+      "lastAccessed": 1778060917675,
+      "type": "file"
+    },
+    {
+      "path": "server/views/adminUsageReport.ejs",
+      "accessCount": 1,
+      "lastAccessed": 1778060921158,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

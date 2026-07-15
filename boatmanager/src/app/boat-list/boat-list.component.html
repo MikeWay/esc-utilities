@@ -1,0 +1,19 @@
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <div style="text-align: center; width: 100%;">Select a Boat</div>
+  </mat-card-header>
+  <mat-card-content>
+
+<mat-chip-listbox aria-label="Boat Selection" class="mat-mdc-chip-set-stacked" [value]="selectedBoat" >
+    @for(boat of boats; track boat['id']) {
+        <mat-chip-option (selectionChange)="onBoatSelectionChange($event)" [value]="boat">{{ boat['name'] }}</mat-chip-option>
+    }
+</mat-chip-listbox>
+@if(boats.length === 0 && currentState?.checkOutInProgress) {
+    <div class="no-boats-message">No boats available. Has someone forgotten to check in?.</div>
+}
+@if(boats.length === 0 && currentState?.checkInInProgress) {
+    <div class="no-boats-message">There are no boats currently checked out.</div>
+}
+  </mat-card-content>
+</mat-card>

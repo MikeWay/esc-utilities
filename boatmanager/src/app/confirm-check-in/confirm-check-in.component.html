@@ -1,0 +1,53 @@
+<mat-card appearance="outlined">
+    <mat-card-header>
+        <div style="text-align: center; width: 100%;">
+            <mat-card-title>Confirm Check In</mat-card-title>
+        </div>
+
+    </mat-card-header>
+    <mat-card-content>
+        <p>You are checking in <strong>{{ boatName }}</strong>.</p>
+
+        <p>I confirm that: </p>
+        <div class="checkbox-row">
+            <mat-checkbox class="center-toggle-group" style="font-size: 0.9em;" [(ngModel)]="iAmTheUser" (ngModelChange)="modelChange()">
+                I am <strong>{{ userName }}</strong>.
+            </mat-checkbox>
+            <span style="font-size: 0.9em;">&nbsp;(If not: you will be taken to a page to identify yourself.)</span>
+        </div>
+        <div class="checkbox-row">
+            <mat-checkbox class="center-toggle-group" style="font-size: 0.9em;" [(ngModel)]="returnedKey" (ngModelChange)="modelChange()">
+                I have returned the key.
+            </mat-checkbox>
+        </div>
+        <div class="checkbox-row">
+            <mat-checkbox class="center-toggle-group" style="font-size: 0.9em;" [(ngModel)]="refueledBoat" (ngModelChange)="modelChange()">
+            I have refueled the boat.
+            </mat-checkbox>
+        </div>
+
+        <div class="input-row" style="margin: 16px 0;">
+            <mat-form-field appearance="fill" style="width: 48%; margin-right: 4%;">
+            <mat-label>Engine Hours</mat-label>
+            <input matInput type="number" [(ngModel)]="engineHours" min="0" placeholder="Hours" (ngModelChange)="modelChange()">
+            </mat-form-field>
+            <mat-form-field appearance="fill" style="width: 48%;">
+            <mat-label>Minutes</mat-label>
+            <input matInput type="number" [(ngModel)]="engineMinutes" min="0" max="59" step="5" placeholder="Minutes" (ngModelChange)="modelChange()">
+            </mat-form-field>
+        </div>
+        <p>Were there any problems with the boat?</p>
+
+        <div class="checkbox-row">
+            <mat-radio-group aria-label="Select an option" [(ngModel)]="problemsWithBoat" name="problemsWithBoat">
+            <mat-radio-button value="Yes" (change)="onProblemsChange($event)"
+                name="problemsWithBoat">Yes</mat-radio-button>
+                <mat-radio-button value="No" (change)="onProblemsChange($event)"
+                    name="problemsWithBoat">No</mat-radio-button>
+            </mat-radio-group>
+
+        </div>
+
+    </mat-card-content>
+
+</mat-card>

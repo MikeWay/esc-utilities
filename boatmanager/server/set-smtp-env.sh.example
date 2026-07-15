@@ -1,0 +1,11 @@
+#!/bin/bash
+# SMTP environment variables for Boat Manager fault notification emails.
+# Copy this file to set-smtp-env.sh, fill in the real values, then:
+#   source server/set-smtp-env.sh
+# before starting the server.
+
+export SMTP_HOST=your.smtp.server
+export SMTP_PORT=587
+export SMTP_USER=your-smtp-username
+export SMTP_PASS=your-smtp-password
+export SMTP_FROM="Boat Manager <noreply@exe-sailing-club.org>"

@@ -1,0 +1,23 @@
+{
+    "checkout_reasons": [
+        "Sailability",
+        "Maintenance",
+        "Dinghy Racing",
+        "Dinghy Cruising",
+        "Cruiser Racing",
+        "Training",
+        "Juniors",
+        "Other"
+    ],
+    "smtp_host": "your.smtp.server",
+    "smtp_port": 587,
+    "smtp_user": "your-smtp-username",
+    "smtp_pass": "your-smtp-password",
+    "smtp_from": "Boat Manager <noreply@exe-sailing-club.org>",
+    "checkin_reasons": [
+        "Boat not checked in correctly",
+        "Other"
+    ],
+    "weekly_report_recipients": ["training@exe-sailing-club.org"],
+    "new_fault_notification_recipients": ["bosun@exesc.org"]
+}

@@ -1,0 +1,25 @@
+<% if (Array.isArray(engineHours)) { %>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Boat ID</th>
+                <th>Hours</th>
+                <th>Reason</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% engineHours.forEach(function(item, index) { %>
+                <tr>
+                    <td><%= index + 1 %></td>
+                    <td><%= item.boatId %></td>
+                    <td><%= item.hours %></td>
+                    <td><%= item.reason %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+<% } else { %>
+    <p>No engine hours data available.</p>
+<% } %> 
+

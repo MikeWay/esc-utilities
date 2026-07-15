@@ -1,0 +1,14 @@
+<style>
+    .center-toggle-group {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: max-content;
+    }
+</style>
+<div class="center-toggle-group">
+    <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
+        <mat-button-toggle value="check-out" (change)="onToggleChange($event)" [checked]="inOut === 'checkOut'">Check Out</mat-button-toggle>
+        <mat-button-toggle value="check-in" (change)="onToggleChange($event)" [checked]="inOut === 'checkIn'">Check In</mat-button-toggle>
+    </mat-button-toggle-group>
+</div>

@@ -1,0 +1,10 @@
+<h6 class="text-muted text-uppercase small mb-2">Send Weekly Report</h6>
+<form action="/admin/weeklyReport" method="POST">
+    <div class="mb-3">
+        <label for="recipients" class="form-label">Send to (comma-separated email addresses)</label>
+        <input type="text" id="recipients" name="recipients" class="form-control"
+               value="<%= locals.defaultRecipients %>" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Send Report Now</button>
+    <a href="/admin" class="btn btn-outline-secondary ms-2">Cancel</a>
+</form>

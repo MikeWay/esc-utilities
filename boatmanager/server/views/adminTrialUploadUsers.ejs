@@ -1,0 +1,9 @@
+<h1>Trial Upload Users CSV</h1>
+<p>Upload a CSV file to see a report of what would change — no data will be modified.</p>
+<p>The file format is: <pre>id,firstName,lastName,dob</pre>
+e.g.<pre>1,Mike,Way,14-07-60</pre></p>
+<form action="/admin/trial-upload-users" method="POST" enctype="multipart/form-data">
+    <label for="csvFile">Select CSV file:</label>
+    <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
+    <button type="submit">Generate Report</button>
+</form>

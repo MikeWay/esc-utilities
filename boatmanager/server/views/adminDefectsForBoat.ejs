@@ -1,0 +1,42 @@
+<%
+// Assuming locals.defect is available and is of type DefectsForBoat
+//const defect = locals.defect;
+%>
+
+<h2>Defect Details</h2>
+<ul>
+    <li><strong>ID:</strong> <%= defectsForBoat.boatId %></li>
+    <li><strong>Boat Name:</strong> <%= boat.name %></li>
+    <li>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Defect Name</th>
+                    <th>Additional Info</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- DefectsForBoat. reportedDefects: ReportedDefect[]-->
+                <% defectsForBoat.reportedDefects.forEach(function(reportedDefect, idx) { %>
+                    <tr>
+                        <td><%= reportedDefect.defectType.name %></td>
+                        <td><%= reportedDefect.additionalInfo %></td>
+                        <td>
+                            <form action="/admin/checkIfDefectToBeCleared" method="POST" style="display:inline;" >
+                                <input type="hidden" name="reportedDefectId" value="<%= reportedDefect.defectId %>">
+                                <input type="hidden" name="boatId" value="<%= defectsForBoat.boatId %>">
+                                <input type="hidden" name="defectName" value="<%= reportedDefect.defectType.name %>">
+                                <button type="submit" class="btn btn-success">Clear</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </li>
+    <li><strong>Additional Info:</strong> <%= defectsForBoat.additionalInfo %></li>
+    <li><strong>Status:</strong> <%= defectsForBoat.status %></li>
+    <li><strong>Reported By:</strong> <%= defectsForBoat.reportedBy %></li>
+    <li><strong>Date Reported:</strong> <%= defectsForBoat.dateReported %></li>
+</ul>

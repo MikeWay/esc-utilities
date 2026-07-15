@@ -1,0 +1,59 @@
+<h1>Trial Upload Users — Report</h1>
+<p class="text-muted">No changes have been made. This is a simulation only.</p>
+
+<h2 class="mt-4">Users who would be deleted (<%= locals.usersToDelete.length %>)</h2>
+<% if (locals.usersToDelete.length === 0) { %>
+    <p class="text-muted">No existing users on the system.</p>
+<% } else { %>
+    <table class="table table-sm table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>DOB (day/month/year)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for (const user of locals.usersToDelete) { %>
+            <tr>
+                <td><%= user.id %></td>
+                <td><%= user.firstName %></td>
+                <td><%= user.lastName %></td>
+                <td><%= user.birthDay %>/<%= user.birthMonth %>/<%= user.birthYear ?? '?' %></td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+<% } %>
+
+<h2 class="mt-4">New users who would be added (<%= locals.newUsers.length %>)</h2>
+<% if (locals.newUsers.length === 0) { %>
+    <p class="text-muted">No users found in the uploaded file.</p>
+<% } else { %>
+    <table class="table table-sm table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>DOB (day/month/year)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for (const user of locals.newUsers) { %>
+            <tr>
+                <td><%= user.id %></td>
+                <td><%= user.firstName %></td>
+                <td><%= user.lastName %></td>
+                <td><%= user.birthDay %>/<%= user.birthMonth %>/<%= user.birthYear ?? '?' %></td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+<% } %>
+
+<h2 class="mt-4">Total users after upload: <strong><%= locals.totalAfter %></strong></h2>
+
+<a href="/admin/trialUploadUsers" class="btn btn-secondary mt-3">Try another file</a>
+<a href="/admin" class="btn btn-link mt-3">Back to Admin</a>
