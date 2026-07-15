@@ -34,7 +34,7 @@
     <div class="dialog-container">
         <h2>Confirm Defect Clearance</h2>
         <p>Are you sure you want to mark this defect: <b><%= defectName %></b> as cleared?</p>
-        <form method="POST" action="/admin/confirmDefectCleared">
+        <form method="POST" action="<%= basePath %>/admin/confirmDefectCleared">
             <div class="dialog-buttons">
                 <input type="hidden" name="defectId" value="<%= defectId %>">
                 <input type="hidden" name="boatId" value="<%= boatId %>">

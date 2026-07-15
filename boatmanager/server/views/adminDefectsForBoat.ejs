@@ -23,7 +23,7 @@
                         <td><%= reportedDefect.defectType.name %></td>
                         <td><%= reportedDefect.additionalInfo %></td>
                         <td>
-                            <form action="/admin/checkIfDefectToBeCleared" method="POST" style="display:inline;" >
+                            <form action="<%= basePath %>/admin/checkIfDefectToBeCleared" method="POST" style="display:inline;" >
                                 <input type="hidden" name="reportedDefectId" value="<%= reportedDefect.defectId %>">
                                 <input type="hidden" name="boatId" value="<%= defectsForBoat.boatId %>">
                                 <input type="hidden" name="defectName" value="<%= reportedDefect.defectType.name %>">

@@ -1,6 +1,6 @@
 <h2>Find Members by Surname</h2>
 
-<form action="/admin/findMembers" method="POST" class="mb-4">
+<form action="<%= basePath %>/admin/findMembers" method="POST" class="mb-4">
     <div class="input-group" style="max-width: 300px;">
         <input type="text" name="letter" class="form-control" placeholder="First letter of surname"
             maxlength="1" value="<%= locals.searchLetter || '' %>" required autofocus>

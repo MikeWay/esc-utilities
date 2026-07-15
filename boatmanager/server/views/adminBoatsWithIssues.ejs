@@ -22,7 +22,7 @@
                             <td><%= boat.name %></td>
                             <td><%= boat.defects.reportedDefects.length %></td>
                             <td>
-                                <a href="/admin/defectsForBoat/<%= boat.id %>" class="btn btn-primary btn-sm">View Issues</a>
+                                <a href="<%= basePath %>/admin/defectsForBoat/<%= boat.id %>" class="btn btn-primary btn-sm">View Issues</a>
                             </td>
                         </tr>
             <% } %>

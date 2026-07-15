@@ -3,7 +3,7 @@
     <div class="card mx-auto" style="max-width: 600px;">
         <div class="card-body">
             <h3 class="card-title mb-4">Add Admin User</h3>
-            <form action="/admin/add-admin-user" method="POST">
+            <form action="<%= basePath %>/admin/add-admin-user" method="POST">
                 <div class="mb-3">
                     <label for="firstName" class="form-label">First Name:</label>
                     <input type="text" id="firstName" name="firstName" class="form-control" required>

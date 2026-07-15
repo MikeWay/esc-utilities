@@ -48,6 +48,7 @@ interface ErrorHandler {
 }
 
 const BASE_PATH = process.env.BASE_PATH || '';
+app.locals.basePath = BASE_PATH;
 
 const errorHandler: ErrorHandler = (err, req, res, next) => {
   //console.error(err.stack);
