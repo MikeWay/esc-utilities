@@ -10,8 +10,9 @@ import { sendPasswordResetEmail, notifyAdminsOfNewUser } from './mailer';
 
 const VALID_CATEGORIES = new Set(['Meat', 'Non-Meat', 'Desserts']);
 const SESSIONS = [
-  'Tues Improv', 'Tues Cruisers', 'Wed Diners', 'Wed Dinghies',
+  'Tues Diners', 'Tues Improv', 'Tues Cruisers', 'Wed Diners', 'Wed Dinghies',
   'Thurs Diners', 'Thurs Juniors', 'Thurs Cruisers', 'Friday',
+  'Saturday', 'Sunday',
 ];
 
 export interface OAuthProviders {

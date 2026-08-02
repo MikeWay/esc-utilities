@@ -127,6 +127,45 @@ async function setup(): Promise<void> {
       }
     }
 
+    // One-time migration: insert 'Tues Diners' as new session_idx=0, shifting existing
+    // slots 0-9 up to 1-10. Wrapped in a transaction (unlike the migrations above) because
+    // it's a multi-step shift, not a single idempotent statement — if the process died
+    // partway through, an unguarded retry would re-shift already-shifted rows and collide
+    // with the UNIQUE(dish_id, session_idx) constraint. All-or-nothing keeps a crash safe
+    // to retry from the original, unmigrated state.
+    const CANONICAL_SESSIONS = [
+      'Tues Diners', 'Tues Improv', 'Tues Cruisers', 'Wed Diners', 'Wed Dinghies',
+      'Thurs Diners', 'Thurs Juniors', 'Thurs Cruisers', 'Friday', 'Saturday', 'Sunday',
+    ];
+    const alreadyShifted = await client.query(
+      "SELECT 1 FROM sessions WHERE session_idx = 0 AND session_name = 'Tues Diners' LIMIT 1"
+    );
+    if ((alreadyShifted.rowCount ?? 0) === 0) {
+      await client.query('BEGIN');
+      try {
+        for (let oldIdx = 9; oldIdx >= 0; oldIdx--) {
+          await client.query(
+            'UPDATE sessions SET session_idx = $1, session_name = $2, updated_at = NOW() WHERE session_idx = $3',
+            [oldIdx + 1, CANONICAL_SESSIONS[oldIdx + 1], oldIdx]
+          );
+        }
+        const r = await client.query(
+          `INSERT INTO sessions(dish_id, session_idx, session_name, used)
+           SELECT d.id, 0, 'Tues Diners', 0 FROM dishes d
+           WHERE NOT EXISTS (
+             SELECT 1 FROM sessions s WHERE s.dish_id = d.id AND s.session_idx = 0
+           )`
+        );
+        await client.query('COMMIT');
+        if ((r.rowCount ?? 0) > 0) {
+          console.log(`Shifted session indices and inserted ${r.rowCount} 'Tues Diners' rows.`);
+        }
+      } catch (e) {
+        await client.query('ROLLBACK');
+        throw e;
+      }
+    }
+
     console.log('Done.');
   } finally {
     client.release();

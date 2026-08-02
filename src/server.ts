@@ -23,7 +23,7 @@ const APP_VERSION = (() => {
 const pool = new Pool(cfg);
 
 const SESSIONS = [
-  'Tues Improv', 'Tues Cruisers', 'Wed Diners', 'Wed Dinghies',
+  'Tues Diners', 'Tues Improv', 'Tues Cruisers', 'Wed Diners', 'Wed Dinghies',
   'Thurs Diners', 'Thurs Juniors', 'Thurs Cruisers', 'Friday',
   'Saturday', 'Sunday',
 ] as const;
