@@ -106,8 +106,42 @@ EOF
 
 # ── deploy ─────────────────────────────────────────────────────
 echo "==> Deploying to Lightsail ($SERVICE)..."
+# publicDomainNames is not accepted by create-container-service-deployment;
+# strip it into a temp file for the deployment call.
+DEPLOY_TMP=$(mktemp /tmp/deploy-XXXXXX.json)
+python3 - "$DEPLOY_JSON" "$DEPLOY_TMP" <<'EOF'
+import sys, json
+d = json.load(open(sys.argv[1]))
+d.pop('publicDomainNames', None)
+json.dump(d, open(sys.argv[2], 'w'), indent=2)
+EOF
 aws lightsail create-container-service-deployment \
+  --no-cli-pager \
   --region "$REGION" --service-name "$SERVICE" \
-  --cli-input-json "file://$DEPLOY_JSON"
+  --cli-input-json "file://$DEPLOY_TMP"
+rm -f "$DEPLOY_TMP"
+
+# ── custom domains ─────────────────────────────────────────────
+PUB_DOMAINS=$(python3 - "$DEPLOY_JSON" <<'EOF'
+import sys, json
+d = json.load(open(sys.argv[1]))
+print(json.dumps(d.get('publicDomainNames', {})))
+EOF
+)
+if [ "$PUB_DOMAINS" != "{}" ] && [ -n "$PUB_DOMAINS" ]; then
+  echo "==> Waiting for deployment to be ACTIVE before attaching custom domains..."
+  until aws lightsail get-container-service-deployments \
+      --no-cli-pager --region "$REGION" --service-name "$SERVICE" \
+      --query 'deployments[0].state' --output text 2>/dev/null \
+      | grep -qE '^(ACTIVE|FAILED)$'; do
+    sleep 10
+  done
+  echo "==> Attaching custom domains..."
+  aws lightsail update-container-service \
+    --no-cli-pager \
+    --region "$REGION" \
+    --service-name "$SERVICE" \
+    --public-domain-names "$PUB_DOMAINS"
+fi
 
 echo "==> Done. Deployment in progress."
