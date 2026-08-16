@@ -166,6 +166,14 @@ async function setup(): Promise<void> {
       }
     }
 
+    // One-time migration: remove the 'Sunday' session slot (idx 10). It's the last slot,
+    // so no reindexing is needed — a single DELETE is naturally idempotent (a no-op once
+    // the rows are gone), unlike the shift migration above.
+    const sundayDel = await client.query('DELETE FROM sessions WHERE session_idx = 10');
+    if ((sundayDel.rowCount ?? 0) > 0) {
+      console.log(`Removed ${sundayDel.rowCount} 'Sunday' session rows.`);
+    }
+
     console.log('Done.');
   } finally {
     client.release();

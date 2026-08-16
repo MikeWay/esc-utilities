@@ -40,7 +40,7 @@ export async function seedTestDb(pool: Pool): Promise<void> {
 
   const SESSION_NAMES = [
     'Tues Diners','Tues Improv','Tues Cruisers','Wed Diners','Wed Dinghies',
-    'Thurs Diners','Thurs Juniors','Thurs Cruisers','Friday','Saturday','Sunday',
+    'Thurs Diners','Thurs Juniors','Thurs Cruisers','Friday','Saturday',
   ];
 
   const dishDefs = [

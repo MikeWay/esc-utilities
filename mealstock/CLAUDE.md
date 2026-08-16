@@ -137,7 +137,7 @@ Eight tables:
 - `freezer_options` — available freezer labels for the dropdown (`label`, `sort_order`)
 - `password_reset_tokens` — one-time tokens for password reset (`user_id` FK, `token_hash`, `expires_at`, `used`)
 
-The 11 session slots are fixed and named in order: `Tues Diners`, `Tues Improv`, `Tues Cruisers`, `Wed Diners`, `Wed Dinghies`, `Thurs Diners`, `Thurs Juniors`, `Thurs Cruisers`, `Friday`, `Saturday`, `Sunday`. Session `used` values are stored as **positive** integers.
+The 10 session slots are fixed and named in order: `Tues Diners`, `Tues Improv`, `Tues Cruisers`, `Wed Diners`, `Wed Dinghies`, `Thurs Diners`, `Thurs Juniors`, `Thurs Cruisers`, `Friday`, `Saturday`. Session `used` values are stored as **positive** integers.
 
 Dish categories are exactly three strings: `Meat`, `Non-Meat`, `Desserts`.
 
