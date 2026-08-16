@@ -1,6 +1,9 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this
+repository. This app is part of the **ESC-Utilities** monorepo (pulled in via `git subtree` from
+`MikeWay/boatmanager`) — see the root `CLAUDE.md` for monorepo-level info (deploying everything,
+repo layout, other subprojects).
 
 ## Project Overview
 
@@ -52,10 +55,16 @@ Git hooks setup (one-time): `git config core.hooksPath .githooks`
 
 ## Deployment
 
-- **Production server**: `bitnami@ribmanager.exe-sailing-club.org` (AWS Lightsail, eu-west-2)
-- **SSH key**: `~/.ssh/LightsailDefaultKey-eu-west-2.pem`
-- **Deploy**: `./deploy.sh` — SSH into server, stops systemd service, force-resets to `origin/master`, runs `build-all-prod`, restarts service
-- **Service**: `boatmanager` (systemd)
+Production deploys go through the monorepo root's `./deploy.sh`: it builds this app into a Docker
+image and pushes it as the `boatmanager` container in the shared `exe-sc-tools` Lightsail
+container service, alongside nginx (which proxies `ribmanager.exe-sailing-club.org` and
+`/ribmanager/` to it on `localhost:3002`), mealstock, scm-tools, and postgres.
+
+`./deploy.sh` in this directory is a legacy standalone script (SSH into
+`bitnami@ribmanager.exe-sailing-club.org`, stop the `boatmanager` systemd service, force-reset to
+`origin/master`, run `build-all-prod`, restart the service) from before this app was
+containerized into the monorepo — it targets a bare server that predates the current setup and is
+not the production deploy path anymore.
 
 Always run `npm run build-all-prod` locally before deploying to catch build errors.
 

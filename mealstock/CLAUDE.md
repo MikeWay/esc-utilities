@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in the
-mealstock app. This app is part of the `exe-sc-tools` monorepo — see the root `CLAUDE.md` for
+mealstock app. This app is part of the **ESC-Utilities** monorepo — see the root `CLAUDE.md` for
 monorepo-level info (deploying everything, repo layout, other subprojects).
 
 ## Commands

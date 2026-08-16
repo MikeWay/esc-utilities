@@ -1,13 +1,20 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this
+repository. This app is part of the **ESC-Utilities** monorepo (pulled in via `git subtree` from
+`MikeWay/scm-tools`) — see the root `CLAUDE.md` for monorepo-level info (deploying everything,
+repo layout, other subprojects).
 
 ## Build & Run Commands
 
 - `npm run dev` — Start dev server with hot reload (tsx watch)
 - `npm run build` — Compile TypeScript to `dist/`
 - `npm start` — Run compiled output from `dist/`
-- `bash deploy.sh` — Build, rsync to production server, and restart service
+
+Production deploys go through the root `./deploy.sh` (builds this app into a Docker image, pushes
+it to the shared Lightsail container service). `bash deploy.sh` in this directory is a legacy
+standalone script (rsync + systemd restart on a bare server) from before this app was
+containerized into the monorepo — it is no longer the production deploy path.
 
 ## Architecture
 
