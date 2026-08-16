@@ -43,7 +43,7 @@ echo "    nginx image: $NGINX_TAG"
 
 # ── mealstock app ──────────────────────────────────────────────
 echo "==> Building mealstock..."
-docker build -t mealstock-app .
+docker build -t mealstock-app ./mealstock
 
 echo "==> Pushing mealstock..."
 APP_TAG=$(aws lightsail push-container-image \
